@@ -1,5 +1,5 @@
 import sys
-test_input = input()
+test_input = "input_1.txt"
 file = open(test_input, "r")
 
 
@@ -16,6 +16,20 @@ class Centroid:
         self.size = len(lst)
 
 
+def read_file():
+    lines = []
+    while True:
+        try:
+            line = input()
+            lines.append(line)
+        except EOFError:
+            break
+    return lines
+
+
+lines = read_file()
+
+
 def process_data(data):
     for word in data:
         i = data.index(word)
@@ -24,11 +38,11 @@ def process_data(data):
     return data
 
 
-def initialize_clusters(file):
+def initialize_clusters(lines):
     k = int(sys.argv[1])
     clusters = []
     for i in range(k):
-        data = file.readline()
+        data = lines[i]
         data = data.split(",")
         data = process_data(data)
         centroid = Centroid(data)
@@ -40,19 +54,17 @@ def sum_lists(lst1, lst2):
     return [lst1[i] + lst2[i] for i in range(len(lst1))]
 
 
-def k_mean(file, max_iter=200):
-    file_length = get_file_length(file)
-    file = open(test_input, "r")
-    clusters = initialize_clusters(file)
+def k_mean(lines, max_iter=200):
+    file_length = len(lines)
+    clusters = initialize_clusters(lines)
     iterations = 0
     centroids_changed = 0
     first = True
     while iterations < max_iter and (centroids_changed > 0 or first):
-        file = open(test_input, "r")
         first = False
         iterations += 1
         for i in range(file_length):
-            data = file.readline()
+            data = lines[i]
             if data == "":
                 break
             data = data.split(",")
@@ -66,9 +78,7 @@ def k_mean(file, max_iter=200):
                     m = j
             clusters[m].sum_vector = sum_lists(clusters[m].sum_vector, data)
             clusters[m].size += 1
-            #print("m=",m, "sumvector=", clusters[m].sum_vector)
-        #print("sizes=", [cluster.size for cluster in clusters])
-        #print(iterations)
+
         centroids_changed = update_centroids(clusters)
     return clusters
 
@@ -94,25 +104,15 @@ def euclidean(dp, centroid):
     return distance
 
 
-def get_file_length(file):
-    length = 0
-    while True:
-        my_str = file.readline()
-        if my_str == "":
-            break
-        length += 1
-    return length
-
 
 iterations = 200
 if len(sys.argv) == 3:
     iterations = int(sys.argv[-1])
-clusters = k_mean(file, iterations)
+clusters = k_mean(lines, iterations)
 for cluster in clusters:
     for i in range(len(cluster.centroid.lst)):
         cluster.centroid.lst[i] = round(cluster.centroid.lst[i], 4)
 
 for cluster in clusters:
-    print(cluster.centroid.lst)
-
-
+    for i in range(len(cluster.centroid.lst)):
+        print(cluster.centroid.lst[i], end=", ") if i != len(cluster.centroid.lst) - 1 else print(cluster.centroid.lst[i])
