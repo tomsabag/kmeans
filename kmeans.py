@@ -1,6 +1,6 @@
 import sys
 test_input = "input_1.txt"
-file = open(test_input, "r")
+assert (2 <= len(sys.argv) <= 3)
 
 
 class Cluster:
@@ -39,6 +39,8 @@ def process_data(data):
 
 
 def initialize_clusters(lines):
+    assert (sys.argv[1]).isnumeric()
+    assert(sys.argv[1][0] != "0")
     k = int(sys.argv[1])
     clusters = []
     for i in range(k):
@@ -104,14 +106,19 @@ def euclidean(dp, centroid):
     return distance
 
 
-
 iterations = 200
+
 if len(sys.argv) == 3:
+    assert (sys.argv[-1]).isnumeric()
+    assert(sys.argv[-1][0] != "0")
     iterations = int(sys.argv[-1])
+
+
 clusters = k_mean(lines, iterations)
+
 for cluster in clusters:
     for i in range(len(cluster.centroid.lst)):
-        cluster.centroid.lst[i] = round(cluster.centroid.lst[i], 4)
+        cluster.centroid.lst[i] = format(cluster.centroid.lst[i], '.4f')
 
 for cluster in clusters:
     for i in range(len(cluster.centroid.lst)):
